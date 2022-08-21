@@ -1,27 +1,30 @@
-import React, { Key, useState } from 'react';
+import React, { useState } from 'react';
 import TodoItem from './TodoItem';
 
-export interface ITodo {
-  id: Key;
-  todo: String;
-  done: Boolean;
-}
+import {
+  addTodo,
+  deleteTodo,
+  getTodos,
+  setDone,
+} from '../redux/features/todo/todoSlice';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
 
 const Todos: React.FC = () => {
   const [todoInput, setTodoInput] = useState('');
-  const [todos, setTodos] = useState<ITodo[]>([]);
+
+  const { todos } = useAppSelector(getTodos);
+  const dispatch = useAppDispatch();
 
   const handleEnterInputTodo = (e: React.KeyboardEvent<HTMLElement>) => {
-    console.log('e', e);
-    if (e.key === 'Enter') {
-      setTodos([
-        ...todos,
-        {
+    if (e.key === 'Enter' && todoInput !== '') {
+      dispatch(
+        addTodo({
           id: `${Math.random() * 1000}`,
           todo: todoInput,
           done: false,
-        },
-      ]);
+        })
+      );
+      setTodoInput('');
     }
   };
   return (
@@ -36,6 +39,7 @@ const Todos: React.FC = () => {
           <input
             className="rounded-md px-2 py-1 text-sm w-full max-w-xs"
             type="text"
+            value={todoInput}
             onChange={(e) => setTodoInput(e.target.value)}
             onKeyDown={handleEnterInputTodo}
           />
@@ -43,7 +47,14 @@ const Todos: React.FC = () => {
         <div className="max-w-xs mx-auto space-y-3">
           {todos &&
             todos.map((todo) => {
-              return <TodoItem key={todo.id} {...todo} />;
+              return (
+                <TodoItem
+                  key={todo.id}
+                  setDone={(id) => dispatch(setDone(id))}
+                  deleteItem={(id) => dispatch(deleteTodo(id))}
+                  {...todo}
+                />
+              );
             })}
         </div>
       </section>

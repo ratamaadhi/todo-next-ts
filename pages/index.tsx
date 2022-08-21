@@ -3,6 +3,7 @@ import Head from 'next/head';
 import Todos from '../components/Todos';
 
 const Home: NextPage = () => {
+  console.log('rendered');
   return (
     <div className="bg-slate-50 dark:bg-slate-900 antialiased font-poppins">
       <Head>
